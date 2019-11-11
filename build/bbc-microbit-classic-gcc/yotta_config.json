@@ -1,0 +1,10 @@
+{
+  "minar": {
+    "initial_event_pool_size": 50,
+    "additional_event_pools_size": 100
+  },
+  "arch": {
+    "arm": {}
+  },
+  "mbed": {}
+}
