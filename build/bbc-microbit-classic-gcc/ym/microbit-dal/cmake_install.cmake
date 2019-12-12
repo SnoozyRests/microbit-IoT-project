@@ -1,4 +1,4 @@
-# Install script for directory: /home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit-dal
+# Install script for directory: /home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit-dal
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -27,13 +27,18 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
+# Is this installation the result of a crosscompile?
+if(NOT DEFINED CMAKE_CROSSCOMPILING)
+  set(CMAKE_CROSSCOMPILING "TRUE")
+endif()
+
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/ym/mbed-classic/cmake_install.cmake")
-  include("/home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/ym/ble/cmake_install.cmake")
-  include("/home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/ym/ble-nrf51822/cmake_install.cmake")
-  include("/home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/ym/nrf51-sdk/cmake_install.cmake")
-  include("/home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit-dal/source/cmake_install.cmake")
+  include("/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/ym/mbed-classic/cmake_install.cmake")
+  include("/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/ym/ble/cmake_install.cmake")
+  include("/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/ym/ble-nrf51822/cmake_install.cmake")
+  include("/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/ym/nrf51-sdk/cmake_install.cmake")
+  include("/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit-dal/source/cmake_install.cmake")
 
 endif()
 

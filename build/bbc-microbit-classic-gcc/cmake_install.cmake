@@ -1,4 +1,4 @@
-# Install script for directory: /home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc
+# Install script for directory: /home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -27,10 +27,15 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
+# Is this installation the result of a crosscompile?
+if(NOT DEFINED CMAKE_CROSSCOMPILING)
+  set(CMAKE_CROSSCOMPILING "TRUE")
+endif()
+
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit/cmake_install.cmake")
-  include("/home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/source/cmake_install.cmake")
+  include("/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit/cmake_install.cmake")
+  include("/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/source/cmake_install.cmake")
 
 endif()
 
@@ -42,5 +47,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

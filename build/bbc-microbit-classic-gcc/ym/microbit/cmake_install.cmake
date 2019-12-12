@@ -1,4 +1,4 @@
-# Install script for directory: /home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit
+# Install script for directory: /home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -27,10 +27,15 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
+# Is this installation the result of a crosscompile?
+if(NOT DEFINED CMAKE_CROSSCOMPILING)
+  set(CMAKE_CROSSCOMPILING "TRUE")
+endif()
+
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit-dal/cmake_install.cmake")
-  include("/home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit/source/cmake_install.cmake")
+  include("/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit-dal/cmake_install.cmake")
+  include("/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit/source/cmake_install.cmake")
 
 endif()
 

@@ -6,18 +6,18 @@ project(microbit)
 
 # include root directories of all components we depend on (directly and
 # indirectly, including ourself)
-include_directories("/home/student/microbit/iots_task3")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/microbit")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/microbit-dal")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/mbed-classic")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/ble")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/ble-nrf51822")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk")
+include_directories("/home/jacob/iots/iots_task3")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/microbit")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/microbit-dal")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/mbed-classic")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/ble")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/ble-nrf51822")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk")
 
 
 # recurse into dependencies that aren't built elsewhere
 add_subdirectory(
-   "/home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit-dal"
+   "/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit-dal"
    "${CMAKE_BINARY_DIR}/ym/microbit-dal"
 )
 
@@ -26,44 +26,44 @@ add_subdirectory(
 # And others (typically CMSIS implementations) need to export non-system header
 # files. Please don't use this facility. Please. It's much, much better to fix
 # implementations that import these headers to import them using the full path.
-include_directories("/home/student/microbit/iots_task3/yotta_modules/microbit/inc")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/microbit-dal/inc/core")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/microbit-dal/inc/types")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/microbit-dal/inc/drivers")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/microbit-dal/inc/bluetooth")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/microbit-dal/inc/platform")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/mbed-classic/api")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/mbed-classic/hal")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/mbed-classic/targets/hal")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/mbed-classic/targets/cmsis")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/ble-nrf51822/source/btle")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/ble-nrf51822/source/btle/custom")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/ble-nrf51822/source/common")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/ble_radio_notification")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/ble_services/ble_dfu")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/device_manager")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/device_manager/config")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/device")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/ble_flash")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/delay")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/hal")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/pstorage")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/pstorage/config")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/hci_transport")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/crc16")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/hci")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/scheduler")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/timer")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fds")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fstorage")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/experimental_section_vars")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/common/softdevice_handler")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers")
-include_directories("/home/student/microbit/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/toolchain")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/microbit/inc")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/microbit-dal/inc/core")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/microbit-dal/inc/types")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/microbit-dal/inc/drivers")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/microbit-dal/inc/bluetooth")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/microbit-dal/inc/platform")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/mbed-classic/api")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/mbed-classic/hal")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/mbed-classic/targets/hal")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/mbed-classic/targets/cmsis")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/ble-nrf51822/source/btle")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/ble-nrf51822/source/btle/custom")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/ble-nrf51822/source/common")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/ble_radio_notification")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/ble_services/ble_dfu")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/common")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/device_manager")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/device_manager/config")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/ble/peer_manager")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/device")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/ble_flash")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/delay")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/hal")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/pstorage")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/drivers_nrf/pstorage/config")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/bootloader_dfu/hci_transport")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/crc16")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/hci")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/scheduler")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/timer")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/util")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fds")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/fstorage")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/libraries/experimental_section_vars")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/common/softdevice_handler")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/softdevice/s130/headers")
+include_directories("/home/jacob/iots/iots_task3/yotta_modules/nrf51-sdk/source/nordic_sdk/components/toolchain")
 
 
 # modules with custom CMake build systems may append to the
@@ -91,7 +91,7 @@ set(YOTTA_MODULE_NAME microbit)
 # add_subdirectory because the directories referred to here exist in the source
 # tree, not the working directory
 add_subdirectory(
-    "/home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit/source"
+    "/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/ym/microbit/source"
     "${CMAKE_BINARY_DIR}/ym/microbit/source"
 )
 

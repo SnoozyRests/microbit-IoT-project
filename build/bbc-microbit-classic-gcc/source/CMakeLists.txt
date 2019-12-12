@@ -2,14 +2,14 @@
 
 cmake_minimum_required(VERSION 2.8.11)
 
-include_directories("/home/student/microbit/iots_task3/source")
+include_directories("/home/jacob/iots/iots_task3/source")
 
 
 set(YOTTA_AUTO_TASK3_CPP_FILES
-    "/home/student/microbit/iots_task3/source/main.cpp"
+    "/home/jacob/iots/iots_task3/source/main.cpp"
 )
 # force dependency on the config header for cpp files, which CMake otherwise wouldn't track:
-set_property(SOURCE ${YOTTA_AUTO_TASK3_CPP_FILES} PROPERTY OBJECT_DEPENDS "/home/student/microbit/iots_task3/build/bbc-microbit-classic-gcc/yotta_config.h")
+set_property(SOURCE ${YOTTA_AUTO_TASK3_CPP_FILES} PROPERTY OBJECT_DEPENDS "/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/yotta_config.h")
 
 
 add_executable (task3
