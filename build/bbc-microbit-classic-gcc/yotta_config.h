@@ -3,7 +3,7 @@
 // yotta config data (including backwards-compatible definitions)
 #define TARGET BBC_MICROBIT_CLASSIC_GCC
 #define TARGET_LIKE_BBC_MICROBIT_CLASSIC_GCC
-#define YOTTA_BUILD_INFO_HEADER "/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/yotta_build_info.h"
+#define YOTTA_BUILD_INFO_HEADER "/home/student/Documents/iots_task3/build/bbc-microbit-classic-gcc/yotta_build_info.h"
 #define TARGET_LIKE_BBC_MICROBIT_CLASSIC_GCC
 #define TARGET_LIKE_NRF51822
 #define TARGET_LIKE_NRF

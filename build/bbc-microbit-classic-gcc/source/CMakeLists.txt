@@ -2,26 +2,24 @@
 
 cmake_minimum_required(VERSION 2.8.11)
 
-include_directories("/home/jacob/iots/iots_task3/source")
+include_directories("/home/student/Documents/iots_task3/source")
 
 
 set(YOTTA_AUTO_TASK3_CPP_FILES
-    "/home/jacob/iots/iots_task3/source/salting.c"
-    "/home/jacob/iots/iots_task3/source/sha2.cpp"
-    "/home/jacob/iots/iots_task3/source/main.cpp"
+    "/home/student/Documents/iots_task3/source/main.cpp"
 )
 # force dependency on the config header for cpp files, which CMake otherwise wouldn't track:
-set_property(SOURCE ${YOTTA_AUTO_TASK3_CPP_FILES} PROPERTY OBJECT_DEPENDS "/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/yotta_config.h")
-set(YOTTA_AUTO_TASK3_C_FILES
-    "/home/jacob/iots/iots_task3/source/salting.c"
+set_property(SOURCE ${YOTTA_AUTO_TASK3_CPP_FILES} PROPERTY OBJECT_DEPENDS "/home/student/Documents/iots_task3/build/bbc-microbit-classic-gcc/yotta_config.h")
+set(YOTTA_AUTO_TASK3_HEADER_FILES
+    "/home/student/Documents/iots_task3/source/functioning.h"
 )
-# force dependency on the config header for c files, which CMake otherwise wouldn't track:
-set_property(SOURCE ${YOTTA_AUTO_TASK3_C_FILES} PROPERTY OBJECT_DEPENDS "/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/yotta_config.h")
+# force dependency on the config header for header files, which CMake otherwise wouldn't track:
+set_property(SOURCE ${YOTTA_AUTO_TASK3_HEADER_FILES} PROPERTY OBJECT_DEPENDS "/home/student/Documents/iots_task3/build/bbc-microbit-classic-gcc/yotta_config.h")
 
 
 add_executable (task3
     ${YOTTA_AUTO_TASK3_CPP_FILES}
-    ${YOTTA_AUTO_TASK3_C_FILES}
+    ${YOTTA_AUTO_TASK3_HEADER_FILES}
 )
 set_target_properties(task3 PROPERTIES ENABLE_EXPORTS ON)
 
