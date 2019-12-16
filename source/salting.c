@@ -3,7 +3,6 @@
 #include<stdlib.h>
 
 int saltgen(char *salt, int length){
-  int letterselect;
   char *saltingletters = "abcdefghijklmnopqrstuvwyxz"
                          "ABCDEFGHIJKLMNOPQRSTUVWYXZ"
                          "0123456789";

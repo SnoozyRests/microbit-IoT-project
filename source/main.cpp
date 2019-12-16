@@ -8,10 +8,18 @@ int ringdialer(char *pin);
 int createDPK(char *salt);
 int sendMode();
 int recieveMode();
+char salt[128];
+void onRecv();
+
 char pin[] = {'0','0','0','0','\0'};
 char dpk[65];
 
 extern void sha256(const void *data, size_t len, char *sha2digest);
+
+void onRecv(MicroBitEvent){
+    PacketBuffer rb = uBit.radio.datagram.recv();
+    uBit.display.print(rb);
+}
 
 int main(){
   uBit.init();
@@ -23,20 +31,41 @@ int main(){
   }else if(mode == 2){
     recieveMode();
   }
-  uBit.display.scroll(dpk);
+  //uBit.display.scroll(dpk);
   release_fiber();
 }
 
 int sendMode(){
-    char salt[128];
     saltgen(salt, 128);
     createDPK(salt);
+    uBit.radio.enable();
+    ManagedString s;
+    s = salt[0];
 
+    while(true){
+      if(uBit.buttonA.isPressed()){
+        for(int i = 0; i < sizeof(salt); i++){
+            s = salt[i];
+            uBit.radio.datagram.send(s);
+            uBit.display.print(s);
+            uBit.sleep(1000);
+        }
+      } else if(uBit.buttonB.isPressed()){
+        uBit.radio.datagram.send("button b");
+      }
+      uBit.sleep(100);
+    }
     return 0;
 }
 
 int recieveMode(){
-  return 0;
+    uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onRecv);
+    uBit.radio.enable();
+
+    while(true){
+      uBit.sleep(1000);
+    }
+    return 0;
 }
 
 int selectMode(){
