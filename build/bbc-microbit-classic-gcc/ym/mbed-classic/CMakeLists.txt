@@ -6,8 +6,8 @@ project(mbed-classic)
 
 # include root directories of all components we depend on (directly and
 # indirectly, including ourself)
-include_directories("/home/jacob/iots/iots_task3")
-include_directories("/home/jacob/iots/iots_task3/yotta_modules/mbed-classic")
+include_directories("/home/student/Documents/iots_task3")
+include_directories("/home/student/Documents/iots_task3/yotta_modules/mbed-classic")
 
 
 # recurse into dependencies that aren't built elsewhere
@@ -17,10 +17,10 @@ include_directories("/home/jacob/iots/iots_task3/yotta_modules/mbed-classic")
 # And others (typically CMSIS implementations) need to export non-system header
 # files. Please don't use this facility. Please. It's much, much better to fix
 # implementations that import these headers to import them using the full path.
-include_directories("/home/jacob/iots/iots_task3/yotta_modules/mbed-classic/api")
-include_directories("/home/jacob/iots/iots_task3/yotta_modules/mbed-classic/hal")
-include_directories("/home/jacob/iots/iots_task3/yotta_modules/mbed-classic/targets/hal")
-include_directories("/home/jacob/iots/iots_task3/yotta_modules/mbed-classic/targets/cmsis")
+include_directories("/home/student/Documents/iots_task3/yotta_modules/mbed-classic/api")
+include_directories("/home/student/Documents/iots_task3/yotta_modules/mbed-classic/hal")
+include_directories("/home/student/Documents/iots_task3/yotta_modules/mbed-classic/targets/hal")
+include_directories("/home/student/Documents/iots_task3/yotta_modules/mbed-classic/targets/cmsis")
 
 
 # modules with custom CMake build systems may append to the
@@ -42,8 +42,8 @@ set(YOTTA_MODULE_NAME mbed-classic)
 
 # delegate to an existing CMakeLists.txt:
 add_subdirectory(
-    "/home/jacob/iots/iots_task3/yotta_modules/mbed-classic"
-    "/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/ym/mbed-classic/existing"
+    "/home/student/Documents/iots_task3/yotta_modules/mbed-classic"
+    "/home/student/Documents/iots_task3/build/bbc-microbit-classic-gcc/ym/mbed-classic/existing"
 )
 
 # make YOTTA_MODULE_NAME available as a preprocessor symbol when
