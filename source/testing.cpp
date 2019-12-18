@@ -11,7 +11,6 @@ int main(){
   }
   if (pincode = 2){
     uBit.display.scroll("Option 2");
-    pincode = 3;
   }
   if (pincode = 3){
 
@@ -20,4 +19,8 @@ int main(){
     }
     uBit.display.scroll("option 3");
   }
+  if (pincode = 4){
+
+  }
+
 }
