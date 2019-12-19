@@ -17,7 +17,9 @@ void onRecv();
 int messageMode = 0; //0 = Saltshaking, 1 = Communicating.
 char pin[] = {'0','0','0','0','\0'};
 char salt[128];
+int recvSaltPos = 0;
 char dpk[65];
+char pinSalt[132];
 
 //external SHA256 hashing function.
 extern void sha256(const void *data, size_t len, char *sha2digest);
@@ -33,8 +35,42 @@ extern void sha256(const void *data, size_t len, char *sha2digest);
           needed.
 */
 void onRecv(MicroBitEvent){
-    PacketBuffer rb = uBit.radio.datagram.recv();
-    uBit.display.print(rb);
+    ManagedString s = uBit.radio.datagram.recv();
+    //uBit.display.print(rb);
+    if(s == "ENDSALT"){
+      messageMode = 1;
+      createDPK(salt);
+      uBit.display.scroll("Message Mode");
+    }
+
+    if(messageMode == 0){ //Saltshaking
+      salt[recvSaltPos] = s.charAt(0);
+      uBit.display.print(salt[recvSaltPos]);
+      //salt[recvSaltPos] = s;
+      recvSaltPos++;
+    }
+
+    /*
+    if(recvSaltPos == 128){
+      messageMode = 1;
+      //salt[128] = '\0';
+
+      uBit.display.scroll("Message Mode");
+    }
+    */
+
+    if(messageMode == 1){ //Communicating
+      if(s == "comm1"){
+        uBit.display.scroll(pin);
+        uBit.sleep(300);
+        uBit.display.scroll(salt);
+        uBit.sleep(300);
+      }
+      if(s == "comm2"){
+        uBit.display.scroll(dpk);
+        uBit.sleep(300);
+      }
+    }
 }
 
 /*
@@ -71,21 +107,38 @@ int sendMode(){
     uBit.radio.enable();
     ManagedString s;
 
-    while(true){
+    while(messageMode == 0){
       if(uBit.buttonA.isPressed()){
-        for(int i = 0; i < sizeof(salt); i++){
+        for(int i = 0; i < 128; i++){
             s = salt[i];
             uBit.radio.datagram.send(s);
             uBit.display.print(s);
-            uBit.sleep(1000);
+            uBit.sleep(200);
         }
-      } else if(uBit.buttonB.isPressed()){
-        uBit.radio.datagram.send("button b");
+        uBit.radio.datagram.send("ENDSALT");
+        messageMode = 1;
+        //uBit.display.scroll(dpk);
       }
-      uBit.sleep(100);
     }
+    uBit.sleep(100);
+    uBit.display.scroll("Message Mode");
+    while(messageMode == 1){
+      if(uBit.buttonA.isPressed()){
+        uBit.radio.datagram.send("comm1");
+        uBit.display.scroll(pin);
+        uBit.sleep(300);
+        uBit.display.scroll(salt);
+        uBit.sleep(300);
+      } else if(uBit.buttonB.isPressed()){
+        uBit.radio.datagram.send("comm2");
+        uBit.display.scroll(dpk);
+        uBit.sleep(300);
+      }
+    }
+
     return 0;
 }
+
 
 /*
   Function: recieveMode
@@ -115,7 +168,7 @@ int recieveMode(){
   Notes: N/A
 */
 int selectMode(){
-    uBit.display.scroll("< SEND || > RECIEVE");
+    //uBit.display.scroll("< SEND || > RECIEVE");
     while(true){
       if(uBit.buttonA.isPressed()){
         return 1;
@@ -177,12 +230,13 @@ int saltgen(char *salt, int length){
     char *saltingletters = "abcdefghijklmnopqrstuvwyxz"
                             "ABCDEFGHIJKLMNOPQRSTUVWYXZ"
                             "0123456789";
-
+    ManagedString s;
     for (int i = 0; i < length; i = i + 1){
-      salt[i] = saltingletters[(int)(62.0 * rand()/(RAND_MAX + 1.0))];
+      s = saltingletters[(int)(62.0 * rand()/(RAND_MAX + 1.0))];
+      salt[i] = s.charAt(0);
     }
 
-    salt[128] = '\0';
+    //salt[128] = '\0';
     return 0;
 }
 /*
@@ -194,7 +248,7 @@ int saltgen(char *salt, int length){
   Notes: N/A
 */
 int createDPK(char *salt){
-    char pinSalt[132];
+
     pinSalt[0] = pin[0];
     pinSalt[1] = pin[1];
     pinSalt[2] = pin[2];
