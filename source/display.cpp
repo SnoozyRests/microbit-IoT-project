@@ -1,7 +1,7 @@
 #include "MicroBit.h"
 #include <stdio.h>
 MicroBit uBit;
-int pincode = 1, accelx = 0, accely = 0, compass = 0, ID = 1;
+int pincode = 1, accelx = 0, accely = 0, compass = 0, ID = 1, count = 0;
 int main(){
   uBit.init();
   if (pincode == 1){
@@ -11,6 +11,9 @@ int main(){
   }
   if (pincode == 2){
     uBit.display.scroll("Fans");
+    uBit.io.P0.setDigitalValue(1);
+
+    uBit.display.scroll(  uBit.io.P0.getDigitalValue());
     pincode = 3;
   }
 
@@ -22,10 +25,18 @@ int main(){
     if (uBit.accelerometer.getY() > 600){
       accely ++;
     }
-    uBit.display.scroll("Lights");
+    if (uBit.accelerometer.getX() < 1200){
+      accelx --;
+    }
+    if (uBit.accelerometer.getY() < 1200){
+      accely --;
+    }
+    uBit.display.scroll("Accell");
+    uBit.display.image.clear();
+    uBit.display.image.setPixelValue(accelx,accely,255);
 
-    pincode = 4;
-  }
+pincode = 4;
+      }
  if (pincode == 4){
    uBit.compass.calibrate();
     if (uBit.compass.heading() < 90 && uBit.compass.heading() >= 0 ) {
@@ -43,3 +54,14 @@ int main(){
   }
 
 }
+
+
+/*
+io(MICROBIT_ID_IO_P0,MICROBIT_ID_IO_P1,MICROBIT_ID_IO_P2,
+       MICROBIT_ID_IO_P3,MICROBIT_ID_IO_P4,MICROBIT_ID_IO_P5,
+       MICROBIT_ID_IO_P6,MICROBIT_ID_IO_P7,MICROBIT_ID_IO_P8,
+       MICROBIT_ID_IO_P9,MICROBIT_ID_IO_P10,MICROBIT_ID_IO_P11,
+       MICROBIT_ID_IO_P12,MICROBIT_ID_IO_P13,MICROBIT_ID_IO_P14,
+       MICROBIT_ID_IO_P15,MICROBIT_ID_IO_P16,MICROBIT_ID_IO_P19,
+       MICROBIT_ID_IO_P20),
+*/
