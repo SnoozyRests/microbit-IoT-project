@@ -12,6 +12,7 @@ int createDPK(char *salt);
 int sendMode();
 int recieveMode();
 void onRecv();
+char getChar(char msChar);
 
 //Globally utilised variables.
 int messageMode = 0; //0 = Saltshaking, 1 = Communicating.
@@ -44,7 +45,7 @@ void onRecv(MicroBitEvent){
     }
 
     if(messageMode == 0){ //Saltshaking
-      salt[recvSaltPos] = s.charAt(0);
+      salt[recvSaltPos] = getChar(s.charAt(0));
       uBit.display.print(salt[recvSaltPos]);
       //salt[recvSaltPos] = s;
       recvSaltPos++;
@@ -113,7 +114,7 @@ int sendMode(){
             s = salt[i];
             uBit.radio.datagram.send(s);
             uBit.display.print(s);
-            uBit.sleep(200);
+            uBit.sleep(100);
         }
         uBit.radio.datagram.send("ENDSALT");
         messageMode = 1;
@@ -217,6 +218,16 @@ int rotaryDialer(char *pin){
     return 1;
 }
 
+char getChar(char msChar){
+    char *saltingletters = "abcdefghijklmnopqrstuvwyxz"
+                            "ABCDEFGHIJKLMNOPQRSTUVWYXZ"
+                            "0123456789";
+    for(int i = 0; i < sizeof(saltingletters); i++){
+      if(saltingletters[i] == msChar){
+        return saltingletters[i];
+      }
+    }
+}
 /*
   Function: saltgen
   Operation: generates a variable length salt.
@@ -230,10 +241,11 @@ int saltgen(char *salt, int length){
     char *saltingletters = "abcdefghijklmnopqrstuvwyxz"
                             "ABCDEFGHIJKLMNOPQRSTUVWYXZ"
                             "0123456789";
-    ManagedString s;
+    //ManagedString s;
     for (int i = 0; i < length; i = i + 1){
-      s = saltingletters[(int)(62.0 * rand()/(RAND_MAX + 1.0))];
-      salt[i] = s.charAt(0);
+      //s = saltingletters[(int)(62.0 * rand()/(RAND_MAX + 1.0))];
+      //salt[i] = s.charAt(0);
+      salt[i] = saltingletters[(int)(62.0 * rand()/(RAND_MAX + 1.0))];
     }
 
     //salt[128] = '\0';
