@@ -1,30 +1,4 @@
-#include "MicroBit.h"
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-
-//Prototyping
-MicroBit uBit;
-int selectMode();
-int rotaryDialer(char *pin);
-int saltgen(char *salt, int length);
-int createDPK(char *salt);
-int sendMode();
-int recieveMode();
-void onRecv();
-char getChar(char msChar);
-
-//Globally utilised variables.
-int messageMode = 0; //0 = Saltshaking, 1 = Communicating.
-char pin[] = {'0','0','0','0','\0'};
-char salt[128];
-int recvSaltPos = 0;
-char dpk[65];
-char pinSalt[132];
-
-//external SHA256 hashing function.
-extern void sha256(const void *data, size_t len, char *sha2digest);
-
+#include "main.hpp"
 /*
   Function: onRecv
   Operation: Processes the incoming radio communication.
@@ -36,42 +10,42 @@ extern void sha256(const void *data, size_t len, char *sha2digest);
           needed.
 */
 void onRecv(MicroBitEvent){
-    ManagedString s = uBit.radio.datagram.recv();
-    //uBit.display.print(rb);
-    if(s == "ENDSALT"){
-      messageMode = 1;
-      createDPK(salt);
-      uBit.display.scroll("Message Mode");
-    }
+  ManagedString s = uBit.radio.datagram.recv();
+  //Once sender has finished saltshaking its transmits "ENDSALT" to notify.
+  if(s == "ENDSALT"){
+    state = 1; //transition to communication state.
+    createDPK(salt);
+    uBit.display.scroll("Message Mode");
+  } else if(s == "ENDCOM"){
+    //command acquisition.
+  }
 
-    if(messageMode == 0){ //Saltshaking
-      salt[recvSaltPos] = getChar(s.charAt(0));
-      uBit.display.print(salt[recvSaltPos]);
-      //salt[recvSaltPos] = s;
-      recvSaltPos++;
-    }
+  //Message mode 0 = saltshaking, characters are recieved and stored, utilised
+  // once "ENDSALT" is invoked.
+  if(state == 0){
+    salt[recvSaltPos] = getChar(s.charAt(0));
+    uBit.display.print(salt[recvSaltPos]);
+    recvSaltPos++;
+  }
 
-    /*
-    if(recvSaltPos == 128){
-      messageMode = 1;
-      //salt[128] = '\0';
-
-      uBit.display.scroll("Message Mode");
+  //To be reworked.
+  if(state == 1){
+    if(s == "comm1"){
+      uBit.display.scroll(pin);
+      uBit.sleep(300);
+      uBit.display.scroll(salt);
+      uBit.sleep(300);
+    } else if(s == "comm2"){
+      uBit.display.scroll(dpk);
+      uBit.sleep(300);
+    } else if(s == "comm3"){
+      uBit.display.scroll(s);
+      uBit.sleep(300);
+    }else if (s == "comm4"){
+      uBit.display.scroll(s);
+      uBit.sleep(300);
     }
-    */
-
-    if(messageMode == 1){ //Communicating
-      if(s == "comm1"){
-        uBit.display.scroll(pin);
-        uBit.sleep(300);
-        uBit.display.scroll(salt);
-        uBit.sleep(300);
-      }
-      if(s == "comm2"){
-        uBit.display.scroll(dpk);
-        uBit.sleep(300);
-      }
-    }
+  }
 }
 
 /*
@@ -82,17 +56,24 @@ void onRecv(MicroBitEvent){
   Notes: N/A
 */
 int main(){
-    uBit.init();
-    int mode = selectMode();
-    rotaryDialer(pin);
-    uBit.display.scroll(pin);
-    if(mode == 1){
-      sendMode();
-    }else if(mode == 2){
-      recieveMode();
-    }
-    //uBit.display.scroll(dpk);
-    release_fiber();
+  uBit.init();
+
+  //get desired mode.
+  int mode = selectMode();
+
+  //get pin
+  rotaryDialer(pin);
+  uBit.display.scroll(pin);
+
+  //set mode.
+  if(mode == 1){
+    sendMode();
+  }else if(mode == 2){
+    recieveMode();
+  }
+
+  //Clear uBit threads, typically never reached in this case.
+  release_fiber();
 }
 
 /*
@@ -103,41 +84,51 @@ int main(){
   Notes:
 */
 int sendMode(){
-    saltgen(salt, 128);
-    createDPK(salt);
-    uBit.radio.enable();
-    ManagedString s;
+  //DPK generation calls.
+  saltgen(salt, 128);
+  createDPK(salt);
 
-    while(messageMode == 0){
-      if(uBit.buttonA.isPressed()){
-        for(int i = 0; i < 128; i++){
-            s = salt[i];
-            uBit.radio.datagram.send(s);
-            uBit.display.print(s);
-            uBit.sleep(100);
-        }
-        uBit.radio.datagram.send("ENDSALT");
-        messageMode = 1;
-        //uBit.display.scroll(dpk);
-      }
-    }
-    uBit.sleep(100);
-    uBit.display.scroll("Message Mode");
-    while(messageMode == 1){
-      if(uBit.buttonA.isPressed()){
-        uBit.radio.datagram.send("comm1");
-        uBit.display.scroll(pin);
-        uBit.sleep(300);
-        uBit.display.scroll(salt);
-        uBit.sleep(300);
-      } else if(uBit.buttonB.isPressed()){
-        uBit.radio.datagram.send("comm2");
-        uBit.display.scroll(dpk);
-        uBit.sleep(300);
-      }
-    }
+  //enable Microbit radio and its requirements.
+  uBit.radio.enable();
+  ManagedString s;
 
-    return 0;
+  //perform saltshaking.
+  while(state == 0){
+    if(uBit.buttonA.isPressed()){
+      for(int i = 0; i < 128; i++){
+          s = salt[i];
+          uBit.radio.datagram.send(s);
+          uBit.display.print(s);
+          uBit.sleep(100);
+      }
+
+      //signal end of Saltshaking, transition to messageMode.
+      uBit.radio.datagram.send("ENDSALT");
+      state = 1;
+    }
+  }
+
+  //Sleep for soft barrier, signal message mode.
+  uBit.sleep(100);
+  uBit.display.scroll("Message Mode");
+
+  //Perform message mode, TO BE EXPANDED.
+  while(state == 1){
+    if(uBit.buttonA.isPressed()){
+      uBit.radio.datagram.send("comm1");
+      uBit.display.scroll(pin);
+      uBit.sleep(300);
+      uBit.display.scroll(salt);
+      uBit.sleep(300);
+    } else if(uBit.buttonB.isPressed()){
+      uBit.radio.datagram.send("comm2");
+      uBit.display.scroll(dpk);
+      uBit.sleep(300);
+    }
+  }
+
+  //Never reached.
+  return 0;
 }
 
 
@@ -150,13 +141,17 @@ int sendMode(){
          recieve event.
 */
 int recieveMode(){
-    uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onRecv);
-    uBit.radio.enable();
+  //enable Microbit radio reciever, designate processing function.
+  uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onRecv);
+  uBit.radio.enable();
 
-    while(true){
-      uBit.sleep(1000);
-    }
-    return 0;
+  //await recieve.
+  while(true){
+    uBit.sleep(1000);
+  }
+
+  //never reached.
+  return 0;
 }
 
 /*
@@ -169,15 +164,19 @@ int recieveMode(){
   Notes: N/A
 */
 int selectMode(){
-    //uBit.display.scroll("< SEND || > RECIEVE");
-    while(true){
-      if(uBit.buttonA.isPressed()){
-        return 1;
-      } else if(uBit.buttonB.isPressed()){
-        return 2;
-      }
+  //uBit.display.scroll("< SEND || > RECIEVE");
+
+  //await input.
+  while(true){
+    if(uBit.buttonA.isPressed()){
+      return 1;
+    }else if(uBit.buttonB.isPressed()){
+      return 2;
     }
-    return 0;
+  }
+
+  //never reached.
+  return 0;
 }
 
 /*
@@ -190,44 +189,70 @@ int selectMode(){
          high gives the impression of lag, perhaps further testing is required.
 */
 int rotaryDialer(char *pin){
-    char no[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-    int ringPos = 0, pinPos = 0;
-    uBit.buttonB.setEventConfiguration(MICROBIT_BUTTON_SIMPLE_EVENTS);
-    uBit.sleep(300);
-    while(true){
-      uBit.display.print(no[ringPos]);
-      if(uBit.buttonA.isPressed()){
-        pin[pinPos] = no[ringPos];
-        if(pinPos == 3){
-          return 0;
-        }else{
-          pinPos++;
-        }
+  //runtime critical variables.
+  char no[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+  int ringPos = 0, pinPos = 0;
+
+  //define Microbit button events, prevents double presses.
+  uBit.buttonB.setEventConfiguration(MICROBIT_BUTTON_SIMPLE_EVENTS);
+  uBit.sleep(300);
+
+  //Perform rotaryDialer.
+  while(true){
+    uBit.display.print(no[ringPos]);
+
+    //LOCK
+    if(uBit.buttonA.isPressed()){
+      pin[pinPos] = no[ringPos];
+      if(pinPos == 3){
+        return 0;
+      }else{
+        pinPos++;
+      }
+      uBit.sleep(300);
+    }
+
+    //ROTATE
+    if(uBit.buttonB.isPressed()){
+      if(ringPos == 9){
+        ringPos = 0;
+        uBit.sleep(300);
+      }else{
+        ringPos++;
         uBit.sleep(300);
       }
-      if(uBit.buttonB.isPressed()){
-        if(ringPos == 9){
-          ringPos = 0;
-          uBit.sleep(300);
-        }else{
-          ringPos++;
-          uBit.sleep(300);
-        }
-      }
     }
-    return 1;
+  }
+
+  //Never reached.
+  return 1;
 }
 
+/*
+  Function: getChar
+  Operation: Converts the datagram character to a char character.
+  Input: msChar - the character recieved via radio communication.
+  Output: lookup[n] - the matching char equivilent character.
+  Notes: The character recieved by the microbit is functionally the same as
+          the typical C character but when exposed to hashing for encryption it
+          for some reason yields a different result to the sender, it could be
+          that the byte value of a character in ManagedString differs to that of
+          char encoding.
+*/
 char getChar(char msChar){
-    char *saltingletters = "abcdefghijklmnopqrstuvwyxz"
-                            "ABCDEFGHIJKLMNOPQRSTUVWYXZ"
-                            "0123456789";
-    for(int i = 0; i < sizeof(saltingletters); i++){
-      if(saltingletters[i] == msChar){
-        return saltingletters[i];
-      }
+  //All legal characters.
+  char *lookup = "abcdefghijklmnopqrstuvwyxz"
+                  "ABCDEFGHIJKLMNOPQRSTUVWYXZ"
+                  "0123456789";
+
+  //Perform lookup.
+  for(int i = 0; i < sizeof(lookup); i++){
+    if(lookup[i] == msChar){
+      return lookup[i];
     }
+  }
 }
+
 /*
   Function: saltgen
   Operation: generates a variable length salt.
@@ -238,18 +263,18 @@ char getChar(char msChar){
         you pass it will OOB.
 */
 int saltgen(char *salt, int length){
-    char *saltingletters = "abcdefghijklmnopqrstuvwyxz"
-                            "ABCDEFGHIJKLMNOPQRSTUVWYXZ"
-                            "0123456789";
-    //ManagedString s;
-    for (int i = 0; i < length; i = i + 1){
-      //s = saltingletters[(int)(62.0 * rand()/(RAND_MAX + 1.0))];
-      //salt[i] = s.charAt(0);
-      salt[i] = saltingletters[(int)(62.0 * rand()/(RAND_MAX + 1.0))];
-    }
+  //Salt compliant characters.
+  char *saltingletters = "abcdefghijklmnopqrstuvwyxz"
+                          "ABCDEFGHIJKLMNOPQRSTUVWYXZ"
+                          "0123456789";
 
-    //salt[128] = '\0';
-    return 0;
+  //Generate random number between 0 and 62, assign character based on output.
+  for (int i = 0; i < length; i = i + 1){
+    salt[i] = saltingletters[(int)(62.0 * rand()/(RAND_MAX + 1.0))];
+  }
+
+  //return to calling function.
+  return 0;
 }
 /*
   Function: createDPK
@@ -260,18 +285,22 @@ int saltgen(char *salt, int length){
   Notes: N/A
 */
 int createDPK(char *salt){
+  //insert pin.
+  pinSalt[0] = pin[0];
+  pinSalt[1] = pin[1];
+  pinSalt[2] = pin[2];
+  pinSalt[3] = pin[3];
 
-    pinSalt[0] = pin[0];
-    pinSalt[1] = pin[1];
-    pinSalt[2] = pin[2];
-    pinSalt[3] = pin[3];
+  //insert salt.
+  int j = 0;
+  for(int i = 4; i <= 128; i++){
+    pinSalt[i] = salt[j];
+    j++;
+  }
 
-    int j = 0;
-    for(int i = 4; i <= 128; i++){
-      pinSalt[i] = salt[j];
-      j++;
-    }
+  //hash
+  sha256(pinSalt, sizeof(pinSalt), dpk);
 
-    sha256(pinSalt, sizeof(pinSalt), dpk);
-    return 0;
+  //return to calling function.
+  return 0;
 }
