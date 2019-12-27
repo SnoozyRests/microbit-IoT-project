@@ -67,7 +67,7 @@ pincode = 4;
   }
   uBit.display.scroll("Testing");
   while (pincode == 5){
-
+  uBit.sleep(300);
   MicroBitPin P0(MICROBIT_ID_IO_P0, MICROBIT_PIN_P0, PIN_CAPABILITY_ALL);
   int value = P0.getAnalogValue();
   int highest = 0;
