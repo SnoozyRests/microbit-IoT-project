@@ -1,7 +1,7 @@
 #include "MicroBit.h"
 #include <stdio.h>
 MicroBit uBit;
-int pincode = 1, accelx = 0, accely = 0, compass = 0, ID = 1, count = 0;
+int pincode = 5, accelx = 0, accely = 0, compass = 0, ID = 1, count = 0;
 int main(){
   uBit.init();
   if (pincode == 1){
@@ -11,9 +11,20 @@ int main(){
   }
   if (pincode == 2){
     uBit.display.scroll("Fans");
-    uBit.io.P0.setDigitalValue(1);
+    MicroBitPin P0(MICROBIT_ID_IO_P0, MICROBIT_PIN_P0, PIN_CAPABILITY_ALL);
+    P0.setDigitalValue(1);
 
-    uBit.display.scroll(  uBit.io.P0.getDigitalValue());
+    MicroBitI2C i2c(I2C_SDA0, I2C_SCL0);
+    int read( int address, char * data, int length);
+    int write (int address, char * data, int length, bool repeated);
+    char buf[] = {0X07};
+    uBit.i2c.write(0x1c,buf,2);
+    uBit.i2c.read(0x1c,buf,2);
+    //char displaying = P0.getDigitalValue();
+    uBit.display.scroll("Id %X\r\n",(int)buf[0]);
+    //release_fiber();
+    //return 0;
+    //uBit.display.scroll(buf[0]);
     pincode = 3;
   }
 
@@ -39,6 +50,7 @@ pincode = 4;
       }
  if (pincode == 4){
    uBit.compass.calibrate();
+   uBit.display.scroll(uBit.compass.heading());
     if (uBit.compass.heading() < 90 && uBit.compass.heading() >= 0 ) {
       uBit.display.scroll("North");
     }if (uBit.compass.heading() < 180 && uBit.compass.heading() >= 90 ){
@@ -48,10 +60,23 @@ pincode = 4;
     }if (uBit.compass.heading() < 360 && uBit.compass.heading() >= 270){
       uBit.display.scroll("West");
     }
+    pincode = 5;
     //else{
       //uBit.display.scroll("Compass Failure");
    //}
   }
+  uBit.display.scroll("Testing");
+  while (pincode == 5){
+
+  MicroBitPin P0(MICROBIT_ID_IO_P0, MICROBIT_PIN_P0, PIN_CAPABILITY_ALL);
+  int value = P0.getAnalogValue();
+  int highest = 0;
+  if (value > 0){
+    highest = value;
+  };
+  uBit.display.print(highest);
+
+};
 
 }
 
