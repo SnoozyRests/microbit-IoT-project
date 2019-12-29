@@ -11,13 +11,34 @@
 */
 void onRecv(MicroBitEvent){
   ManagedString s = uBit.radio.datagram.recv();
+
+  if(state == 2){
+    recvCommPos = 0;
+    state = 1;
+  }
+
   //Once sender has finished saltshaking its transmits "ENDSALT" to notify.
   if(s == "ENDSALT"){
-    state = 1; //transition to communication state.
     createDPK(salt);
-    uBit.display.scroll("Message Mode");
-  } else if(s == "ENDCOM"){
-    //command acquisition.
+    hashComms();
+    state = 2;
+    recvCommPos = 0;
+    uBit.display.scroll(state);
+  }
+  if(s == "ENDCOM"){
+    if(strcmp(recvComm, comm1Hash) == 0){
+      uBit.display.scroll("COMM1");
+    } else if(strcmp(recvComm, comm2Hash) == 0){
+      uBit.display.scroll("COMM2");
+    } else if(strcmp(recvComm, comm3Hash) == 0){
+      uBit.display.scroll("COMM3");
+    } else if(strcmp(recvComm, comm4Hash) == 0){
+      uBit.display.scroll("COMM4");
+    }
+    else{
+      uBit.display.scroll(recvComm);
+    }
+    state = 2;
   }
 
   //Message mode 0 = saltshaking, characters are recieved and stored, utilised
@@ -30,13 +51,19 @@ void onRecv(MicroBitEvent){
 
   //To be reworked.
   if(state == 1){
+    recvComm[recvCommPos] = getChar(s.charAt(0));
+    uBit.display.print(recvComm[recvCommPos]);
+    recvCommPos++;
+  /*
     if(s == "comm1"){
-      uBit.display.scroll(pin);
-      uBit.sleep(300);
-      uBit.display.scroll(salt);
-      uBit.sleep(300);
+      //uBit.display.scroll(pin);
+      //uBit.sleep(300);
+      //uBit.display.scroll(salt);
+      //uBit.sleep(300);
+      uBit.display.scroll(comm3Hash);
     } else if(s == "comm2"){
-      uBit.display.scroll(dpk);
+      //uBit.display.scroll(dpk);
+      uBit.display.scroll(recvComm);
       uBit.sleep(300);
     } else if(s == "comm3"){
       uBit.display.scroll(s);
@@ -44,7 +71,7 @@ void onRecv(MicroBitEvent){
     }else if (s == "comm4"){
       uBit.display.scroll(s);
       uBit.sleep(300);
-    }
+    }*/
   }
 }
 
@@ -87,6 +114,7 @@ int sendMode(){
   //DPK generation calls.
   saltgen(salt, 128);
   createDPK(salt);
+  hashComms();
 
   //enable Microbit radio and its requirements.
   uBit.radio.enable();
@@ -95,7 +123,7 @@ int sendMode(){
   //perform saltshaking.
   while(state == 0){
     if(uBit.buttonA.isPressed()){
-      for(int i = 0; i < 128; i++){
+      for(int i = 0; i < SALTSIZE / 4; i++){
           s = salt[i];
           uBit.radio.datagram.send(s);
           uBit.display.print(s);
@@ -115,15 +143,21 @@ int sendMode(){
   //Perform message mode, TO BE EXPANDED.
   while(state == 1){
     if(uBit.buttonA.isPressed()){
-      uBit.radio.datagram.send("comm1");
-      uBit.display.scroll(pin);
-      uBit.sleep(300);
-      uBit.display.scroll(salt);
-      uBit.sleep(300);
+      for(int i = 0; i < 64; i++){
+          s = comm1Hash[i];
+          uBit.radio.datagram.send(s);
+          uBit.display.print(s);
+          uBit.sleep(100);
+      }
+      uBit.radio.datagram.send("ENDCOM");
     } else if(uBit.buttonB.isPressed()){
-      uBit.radio.datagram.send("comm2");
-      uBit.display.scroll(dpk);
-      uBit.sleep(300);
+      for(int i = 0; i < 64; i++){
+          s = comm2Hash[i];
+          uBit.radio.datagram.send(s);
+          uBit.display.print(s);
+          uBit.sleep(100);
+      }
+      uBit.radio.datagram.send("ENDCOM");
     }
   }
 
@@ -269,7 +303,7 @@ int saltgen(char *salt, int length){
                           "0123456789";
 
   //Generate random number between 0 and 62, assign character based on output.
-  for (int i = 0; i < length; i = i + 1){
+  for (int i = 0; i < length / 4; i = i + 1){
     salt[i] = saltingletters[(int)(62.0 * rand()/(RAND_MAX + 1.0))];
   }
 
@@ -293,7 +327,7 @@ int createDPK(char *salt){
 
   //insert salt.
   int j = 0;
-  for(int i = 4; i <= 128; i++){
+  for(int i = 4; i <= SALTSIZE / 4; i++){
     pinSalt[i] = salt[j];
     j++;
   }
@@ -302,5 +336,44 @@ int createDPK(char *salt){
   sha256(pinSalt, sizeof(pinSalt), dpk);
 
   //return to calling function.
+  return 0;
+}
+
+int hashComms(){
+  char temp[69];
+
+  temp[0] = comm1Pin[0];
+  temp[1] = comm1Pin[1];
+  temp[2] = comm1Pin[2];
+  temp[3] = comm1Pin[3];
+
+  int j = 0;
+  for(int i = 4; i <= 69; i++){
+    temp[i] = dpk[j];
+    j++;
+  }
+  sha256(temp, sizeof(pinSalt), comm1Hash);
+
+  temp[0] = comm2Pin[0];
+  temp[1] = comm2Pin[1];
+  temp[2] = comm2Pin[2];
+  temp[3] = comm2Pin[3];
+
+  sha256(temp, sizeof(pinSalt), comm2Hash);
+
+  temp[0] = comm3Pin[0];
+  temp[1] = comm3Pin[1];
+  temp[2] = comm3Pin[2];
+  temp[3] = comm3Pin[3];
+
+  sha256(temp, sizeof(pinSalt), comm3Hash);
+
+  temp[0] = comm4Pin[0];
+  temp[1] = comm4Pin[1];
+  temp[2] = comm4Pin[2];
+  temp[3] = comm4Pin[3];
+
+  sha256(temp, sizeof(pinSalt), comm4Hash);
+
   return 0;
 }
