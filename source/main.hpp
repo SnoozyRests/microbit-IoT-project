@@ -18,6 +18,7 @@ int recieveMode();
 void onRecv();
 char getChar(char msChar);
 int hashComms();
+void performCommand(int comm);
 
 const int saltArraySize = SALTSIZE / 4;
 const int pinSaltArraySize = saltArraySize + 4;
@@ -30,6 +31,7 @@ int recvCommPos = 0;
 char dpk[65];
 char pinSalt[pinSaltArraySize];
 char recvComm[65];
+
 //command variables
 char comm1Pin[] = {'1','2','3','4'};
 char comm2Pin[] = {'2','3','4','5'};

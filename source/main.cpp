@@ -13,6 +13,7 @@ void onRecv(MicroBitEvent){
   ManagedString s = uBit.radio.datagram.recv();
 
   if(state == 2){
+    char recvComm[65];
     recvCommPos = 0;
     state = 1;
   }
@@ -36,7 +37,7 @@ void onRecv(MicroBitEvent){
       uBit.display.scroll("COMM4");
     }
     else{
-      uBit.display.scroll(recvComm);
+      uBit.display.scroll("ERROR");
     }
     state = 2;
   }
@@ -54,24 +55,6 @@ void onRecv(MicroBitEvent){
     recvComm[recvCommPos] = getChar(s.charAt(0));
     uBit.display.print(recvComm[recvCommPos]);
     recvCommPos++;
-  /*
-    if(s == "comm1"){
-      //uBit.display.scroll(pin);
-      //uBit.sleep(300);
-      //uBit.display.scroll(salt);
-      //uBit.sleep(300);
-      uBit.display.scroll(comm3Hash);
-    } else if(s == "comm2"){
-      //uBit.display.scroll(dpk);
-      uBit.display.scroll(recvComm);
-      uBit.sleep(300);
-    } else if(s == "comm3"){
-      uBit.display.scroll(s);
-      uBit.sleep(300);
-    }else if (s == "comm4"){
-      uBit.display.scroll(s);
-      uBit.sleep(300);
-    }*/
   }
 }
 
@@ -141,30 +124,50 @@ int sendMode(){
   uBit.display.scroll("Message Mode");
 
   //Perform message mode, TO BE EXPANDED.
+  int comm = 1;
+
   while(state == 1){
+    uBit.display.print(comm);
     if(uBit.buttonA.isPressed()){
-      for(int i = 0; i < 64; i++){
-          s = comm1Hash[i];
-          uBit.radio.datagram.send(s);
-          uBit.display.print(s);
-          uBit.sleep(100);
-      }
-      uBit.radio.datagram.send("ENDCOM");
+      performCommand(comm);
+      uBit.sleep(300);
     } else if(uBit.buttonB.isPressed()){
-      for(int i = 0; i < 64; i++){
-          s = comm2Hash[i];
-          uBit.radio.datagram.send(s);
-          uBit.display.print(s);
-          uBit.sleep(100);
+      if(comm == 4){
+        comm = 1;
+        uBit.sleep(300);
+      }else{
+        comm++;
+        uBit.sleep(300);
       }
-      uBit.radio.datagram.send("ENDCOM");
     }
   }
-
   //Never reached.
   return 0;
 }
 
+void performCommand(int comm){
+  ManagedString s;
+  for(int i = 0; i < 64; i++){
+    switch(comm){
+      case 1:
+        s = comm1Hash[i];
+        break;
+      case 2:
+        s = comm2Hash[i];
+        break;
+      case 3:
+        s = comm3Hash[i];
+        break;
+      case 4:
+        s = comm4Hash[i];
+        break;
+    }
+      uBit.radio.datagram.send(s);
+      uBit.display.print(s);
+      uBit.sleep(100);
+  }
+  uBit.radio.datagram.send("ENDCOM");
+}
 
 /*
   Function: recieveMode
@@ -348,7 +351,7 @@ int hashComms(){
   temp[3] = comm1Pin[3];
 
   int j = 0;
-  for(int i = 4; i <= 69; i++){
+  for(int i = 4; i <= 68; i++){
     temp[i] = dpk[j];
     j++;
   }
