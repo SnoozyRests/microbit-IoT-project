@@ -25,6 +25,11 @@ char getChar(char msChar);
 int hashComms();
 void sendCommand(int comm);
 
+void accel();
+void compass();
+void fans();
+int pixel_from_g(int val);
+
 //variable size constants.
 const int saltArraySize = SALTSIZE / 4;
 const int pinSaltArraySize = saltArraySize + 4;
@@ -45,6 +50,8 @@ char comm2Pin[] = {'2','3','4','5'};
 char comm3Pin[] = {'3','4','5','6'};
 char comm4Pin[] = {'4','5','6','7'};
 char comm1Hash[65], comm2Hash[65], comm3Hash[65], comm4Hash[65];
+int accelx = 0, accely = 0, ID = 1, count = 0;
+//int compass = 0
 
 //external SHA256 hashing function.
 extern void sha256(const void *data, size_t len, char *sha2digest);
