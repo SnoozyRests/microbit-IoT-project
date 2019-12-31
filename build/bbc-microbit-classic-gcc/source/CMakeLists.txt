@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 2.8.11)
 
-include_directories("/home/jacob/iots/iots_task3/source")
+include_directories("/home/student/Documents/iots_task3/source")
 
 
 set(YOTTA_AUTO_TASK3_CPP_FILES
