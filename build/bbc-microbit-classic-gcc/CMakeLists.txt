@@ -40,14 +40,14 @@ endfunction()
 # set target-defined definitions
 set(YOTTA_BUILD_YEAR "2019") # UTC year
 set(YOTTA_BUILD_MONTH "12") # UTC month 1-12
-set(YOTTA_BUILD_DAY "18") # UTC day 1-31
-set(YOTTA_BUILD_HOUR "14") # UTC hour 0-24
-set(YOTTA_BUILD_MINUTE "57") # UTC minute 0-59
-set(YOTTA_BUILD_SECOND "53") # UTC second 0-61
-set(YOTTA_BUILD_UUID "f408a061-7e62-4b0b-a84c-4b5a53ca16ac") # unique random UUID for each build
-set(YOTTA_BUILD_VCS_ID "efd66750c4067972a6b4956b08639212636092a4") # git or mercurial hash
-set(YOTTA_BUILD_VCS_CLEAN "0") # evaluates true if the version control system was clean, otherwise false
-set(YOTTA_BUILD_VCS_DESCRIPTION "efd6675") # git describe or mercurial equivalent
+set(YOTTA_BUILD_DAY "31") # UTC day 1-31
+set(YOTTA_BUILD_HOUR "11") # UTC hour 0-24
+set(YOTTA_BUILD_MINUTE "31") # UTC minute 0-59
+set(YOTTA_BUILD_SECOND "0") # UTC second 0-61
+set(YOTTA_BUILD_UUID "4a8adbda-c16b-4576-afe2-c9d17a7c7075") # unique random UUID for each build
+set(YOTTA_BUILD_VCS_ID "0fbae12259ef36aa0f20e1fda94d15a38b1ce8d5") # git or mercurial hash
+set(YOTTA_BUILD_VCS_CLEAN "1") # evaluates true if the version control system was clean, otherwise false
+set(YOTTA_BUILD_VCS_DESCRIPTION "0fbae12") # git describe or mercurial equivalent
 set(TARGET BBC_MICROBIT_CLASSIC_GCC)
 set(TARGET_LIKE_BBC_MICROBIT_CLASSIC_GCC TRUE)
 set(YOTTA_BUILD_INFO_HEADER "/home/jacob/iots/iots_task3/build/bbc-microbit-classic-gcc/yotta_build_info.h")
