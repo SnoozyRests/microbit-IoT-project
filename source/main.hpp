@@ -4,8 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+  Only change after some careful consideration, drastic changes can need fine
+  tuning.
+*/
 #define SALTSIZE 128
 #define KEYSIZE 256
+#define DEBUG 0 //0 - Normal command operation, 1 - Debug command passing
 
 //Prototyping
 MicroBit uBit;
@@ -18,10 +23,12 @@ int recieveMode();
 void onRecv();
 char getChar(char msChar);
 int hashComms();
-void performCommand(int comm);
+void sendCommand(int comm);
 
+//variable size constants.
 const int saltArraySize = SALTSIZE / 4;
 const int pinSaltArraySize = saltArraySize + 4;
+
 //Globally utilised variables.
 int state = 0; //0 = Saltshaking, 1 = Communicating, 2 = Lock
 char pin[] = {'0','0','0','0','\0'};

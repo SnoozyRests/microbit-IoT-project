@@ -12,6 +12,7 @@
 void onRecv(MicroBitEvent){
   ManagedString s = uBit.radio.datagram.recv();
 
+  //Check for lock state, reset communication variables, return to state 1.
   if(state == 2){
     char recvComm[65];
     recvCommPos = 0;
@@ -26,31 +27,63 @@ void onRecv(MicroBitEvent){
     recvCommPos = 0;
     uBit.display.scroll(state);
   }
+
+  //Commands are only performed once the end of the command has been designated.
   if(s == "ENDCOM"){
     if(strcmp(recvComm, comm1Hash) == 0){
-      uBit.display.scroll("COMM1");
+      if(DEBUG == 1){
+        /*Debug Mode - Confirm successful receive*/
+        uBit.display.scroll("COMM1");
+      }else{
+        uBit.display.scroll("ONE");
+      }
     } else if(strcmp(recvComm, comm2Hash) == 0){
-      uBit.display.scroll("COMM2");
+      if(DEBUG == 1){
+        /*Debug Mode - Confirm successful receive*/
+        uBit.display.scroll("COMM2");
+      }else{
+        uBit.display.scroll("TWO");
+      }
     } else if(strcmp(recvComm, comm3Hash) == 0){
-      uBit.display.scroll("COMM3");
+      if(DEBUG == 1){
+        /*Debug Mode - Confirm successful receive*/
+        uBit.display.scroll("COMM3");
+      }else{
+        uBit.display.scroll("THREE");
+      }
     } else if(strcmp(recvComm, comm4Hash) == 0){
-      uBit.display.scroll("COMM4");
+      if(DEBUG == 1){
+        /*Debug Mode - Confirm successful receive*/
+        uBit.display.scroll("COMM4");
+      }else{
+        uBit.display.scroll("FOUR");
+      }
+    }else{
+      if(DEBUG == 1){
+        /*Debug Mode, print received communication, mostly used to check if its
+          empty.*/
+        uBit.display.scroll(recvComm);
+      }else{
+        /*Regular mode simply informs of comm error*/
+        uBit.display.scroll("ERROR");
+      }
     }
-    else{
-      uBit.display.scroll("ERROR");
-    }
+
+    //After performing command, enter lock state to avoid data collision.
     state = 2;
   }
 
-  //Message mode 0 = saltshaking, characters are recieved and stored, utilised
-  // once "ENDSALT" is invoked.
+  /*
+    State 0 = saltshaking, characters are recieved and stored, utilised
+     once "ENDSALT" is invoked.
+  */
   if(state == 0){
     salt[recvSaltPos] = getChar(s.charAt(0));
     uBit.display.print(salt[recvSaltPos]);
     recvSaltPos++;
   }
 
-  //To be reworked.
+  //
   if(state == 1){
     recvComm[recvCommPos] = getChar(s.charAt(0));
     uBit.display.print(recvComm[recvCommPos]);
@@ -123,13 +156,13 @@ int sendMode(){
   uBit.sleep(100);
   uBit.display.scroll("Message Mode");
 
-  //Perform message mode, TO BE EXPANDED.
+  //Perform message mode
   int comm = 1;
 
   while(state == 1){
     uBit.display.print(comm);
     if(uBit.buttonA.isPressed()){
-      performCommand(comm);
+      sendCommand(comm);
       uBit.sleep(300);
     } else if(uBit.buttonB.isPressed()){
       if(comm == 4){
@@ -145,7 +178,14 @@ int sendMode(){
   return 0;
 }
 
-void performCommand(int comm){
+/*
+  Function: sendCommand
+  Operation: External command passing
+  Inputs: comm - integer value, which command to pass.
+  Outputs: N/A
+  Notes: Reduces code redundency.
+*/
+void sendCommand(int comm){
   ManagedString s;
   for(int i = 0; i < 64; i++){
     switch(comm){
@@ -313,6 +353,7 @@ int saltgen(char *salt, int length){
   //return to calling function.
   return 0;
 }
+
 /*
   Function: createDPK
   Operation: Handles the construction of the DPK. Merges the pin and salt values
@@ -342,6 +383,14 @@ int createDPK(char *salt){
   return 0;
 }
 
+/*
+  Function: hashComms
+  Operation: Hashes the commands for the SHA256 implementation alternative.
+  Inputs: N/A
+  Outputs: Sucess value.
+  Notes: Operates as an alternative to AES encryption, see system specification
+          for further reasoning.
+*/
 int hashComms(){
   char temp[69];
 
