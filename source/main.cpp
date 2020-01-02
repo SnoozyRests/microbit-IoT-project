@@ -25,7 +25,7 @@ void onRecv(MicroBitEvent){
     hashComms();
     state = 2;
     recvCommPos = 0;
-    uBit.display.scroll(state);
+    uBit.display.scroll("MESSAGE MODE");
   }
 
   //Commands are only performed once the end of the command has been designated.
@@ -35,28 +35,33 @@ void onRecv(MicroBitEvent){
         /*Debug Mode - Confirm successful receive*/
         uBit.display.scroll("COMM1");
       }else{
-        uBit.display.scroll("ONE");
+        /*Normal mode - Output Smiley*/
+        MicroBitImage smiley("0,255,0,255, 0\n0,255,0,255,0\n0,0,0,0,0\n255,0,0,0,255\n0,255,255,255,0\n");
+        uBit.display.scroll(smiley);
       }
     } else if(strcmp(recvComm, comm2Hash) == 0){
       if(DEBUG == 1){
         /*Debug Mode - Confirm successful receive*/
         uBit.display.scroll("COMM2");
       }else{
-        uBit.display.scroll("TWO");
+        /*Normal mode - toggle fans*/
+        fans();
       }
     } else if(strcmp(recvComm, comm3Hash) == 0){
       if(DEBUG == 1){
         /*Debug Mode - Confirm successful receive*/
         uBit.display.scroll("COMM3");
       }else{
-        uBit.display.scroll("THREE");
+        /*Normal mode - enter accelerometer mode.*/
+        accel();
       }
     } else if(strcmp(recvComm, comm4Hash) == 0){
       if(DEBUG == 1){
         /*Debug Mode - Confirm successful receive*/
         uBit.display.scroll("COMM4");
       }else{
-        uBit.display.scroll("FOUR");
+        /*Normal mode - enter compass mode.*/
+        compass();
       }
     }else{
       if(DEBUG == 1){
@@ -83,12 +88,126 @@ void onRecv(MicroBitEvent){
     recvSaltPos++;
   }
 
-  //
+  //State 1 = Communicating, characters are received and stored.
   if(state == 1){
     recvComm[recvCommPos] = getChar(s.charAt(0));
     uBit.display.print(recvComm[recvCommPos]);
     recvCommPos++;
   }
+}
+
+/*
+  Function: fans
+  Operation: Toggle fan operation.
+  Inputs: N/A
+  Outputs: Microbit pin P0 electrical output to fan header.
+  Notes: N/A
+*/
+void fans(){
+  //initialise fans.
+  uBit.display.scroll("Fans");
+  MicroBitPin P0(MICROBIT_ID_IO_P0, MICROBIT_PIN_P0, PIN_CAPABILITY_ALL);
+  P0.setDigitalValue(1);
+
+  //Output through pin.
+  MicroBitI2C i2c(I2C_SDA0, I2C_SCL0);
+  int read( int address, char * data, int length);
+  int write (int address, char * data, int length, bool repeated);
+  char buf[] = {0X07};
+  uBit.i2c.write(0x1c,buf,2);
+  uBit.i2c.read(0x1c,buf,2);
+
+  //Required?
+  uBit.display.scroll("Id %X\r\n",(int)buf[0]);
+}
+
+/*
+  Function: compass
+  Operation: Toggle compass functionality.
+  Inputs: N/A
+  Outputs: Microbit displays cardinal direction on LED.
+  Notes: N/A
+*/
+void compass(){
+  //initialise compass.
+  int loop = 1;
+  uBit.compass.calibrate();
+
+  //Loop and display where the Microbit is currently pointing
+
+  while(loop){
+
+    //Exit functionality.
+    if(uBit.buttonB.isPressed()){
+      loop = 0;
+    }
+
+    //Currently only works for the four cardinal directions.
+    if (uBit.compass.heading() < 90 && uBit.compass.heading() >= 0 ) {
+      uBit.display.print("N");
+    }else if (uBit.compass.heading() < 180 && uBit.compass.heading() >= 90 ){
+      uBit.display.print("E");
+    }else if (uBit.compass.heading() < 270 && uBit.compass.heading() >= 180){
+      uBit.display.print("S");
+    }else if (uBit.compass.heading() < 360 && uBit.compass.heading() >= 270){
+      uBit.display.print("W");
+    }
+
+    uBit.sleep(200);
+  }
+  uBit.display.scroll("EXIT");
+}
+
+/*
+  Function: accel
+  Operation: Toggle accelerometer functionality.
+  Inputs: N/A
+  Outputs: Microbit outputs orientation on LED.
+  Notes: N/A
+*/
+void accel(){
+  //initialise accelerometer
+  int loop = 1;
+  uBit.display.scroll("Accel");
+
+  //Poll accelerometer status until button b is pressed.
+  while(loop){
+        int x = pixel_from_g(uBit.accelerometer.getX());
+        int y = pixel_from_g(uBit.accelerometer.getY());
+
+        uBit.display.image.clear();
+        uBit.display.image.setPixelValue(x, y, 255);
+
+        if(uBit.buttonB.isPressed()){
+          loop = 0;
+        }
+
+        uBit.sleep(100);
+
+    }
+  uBit.display.scroll("EXIT");
+}
+
+/*
+  Function: pixel_from_g
+  Operation: Obtain pixel position using accelerometer x and y
+  Inputs: int val - accelerometer x or y.
+  Outputs: Calculated pixel x or y position.
+  Notes: Provided by Lancaster University.
+*/
+int pixel_from_g(int val){
+  int x = 0;
+
+  if (val > -750)
+      x++;
+  if (val > -250)
+      x++;
+  if (val > 250)
+      x++;
+  if (val > 750)
+      x++;
+
+  return x;
 }
 
 /*
@@ -154,7 +273,7 @@ int sendMode(){
 
   //Sleep for soft barrier, signal message mode.
   uBit.sleep(100);
-  uBit.display.scroll("Message Mode");
+  uBit.display.scroll("MESSAGE MODE");
 
   //Perform message mode
   int comm = 1;
@@ -241,7 +360,7 @@ int recieveMode(){
   Notes: N/A
 */
 int selectMode(){
-  //uBit.display.scroll("< SEND || > RECIEVE");
+  uBit.display.scroll("< SEND || > RECIEVE");
 
   //await input.
   while(true){

@@ -25,6 +25,11 @@ char getChar(char msChar);
 int hashComms();
 void sendCommand(int comm);
 
+void accel();
+void compass();
+void fans();
+int pixel_from_g(int val);
+
 //variable size constants.
 const int saltArraySize = SALTSIZE / 4;
 const int pinSaltArraySize = saltArraySize + 4;
