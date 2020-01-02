@@ -25,7 +25,7 @@ void onRecv(MicroBitEvent){
     hashComms();
     state = 2;
     recvCommPos = 0;
-    uBit.display.scroll(state);
+    uBit.display.scroll("MESSAGE MODE");
   }
 
   //Commands are only performed once the end of the command has been designated.
@@ -159,7 +159,7 @@ void compass(){
 }
 
 /*
-  Function: fans
+  Function: accel
   Operation: Toggle accelerometer functionality.
   Inputs: N/A
   Outputs: Microbit outputs orientation on LED.
@@ -273,7 +273,7 @@ int sendMode(){
 
   //Sleep for soft barrier, signal message mode.
   uBit.sleep(100);
-  uBit.display.scroll("Message Mode");
+  uBit.display.scroll("MESSAGE MODE");
 
   //Perform message mode
   int comm = 1;
@@ -360,7 +360,7 @@ int recieveMode(){
   Notes: N/A
 */
 int selectMode(){
-  //uBit.display.scroll("< SEND || > RECIEVE");
+  uBit.display.scroll("< SEND || > RECIEVE");
 
   //await input.
   while(true){
