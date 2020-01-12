@@ -174,16 +174,6 @@ rule CXX_STATIC_LIBRARY_LINKER__microbit
 
 
 #############################################
-# Rule for compiling C files.
-
-rule C_COMPILER__task3
-  depfile = $DEP_FILE
-  deps = gcc
-  command = /usr/bin/arm-none-eabi-gcc $DEFINES $INCLUDES $FLAGS -MMD -MT $out -MF $DEP_FILE -o $out -c $in
-  description = Building C object $out
-
-
-#############################################
 # Rule for compiling CXX files.
 
 rule CXX_COMPILER__task3
