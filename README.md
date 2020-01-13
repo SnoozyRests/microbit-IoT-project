@@ -14,6 +14,23 @@ UFCF8P-15-M
     * [19041865 - Luke Murray Reflective Statement](https://gitlab.uwe.ac.uk/jj6-williams/iots_task3/blob/master/documentation/LUKE_MURRAY_REFLECTIVE_STATEMENT.pdf)  
     * [15008632 - Jacob Williams Reflective Statement](https://gitlab.uwe.ac.uk/jj6-williams/iots_task3/blob/master/documentation/JACOB_WILLIAMS_REFLECTIVE_STATEMENT.pdf)  
 
+## Project Outline  
+The aim of this project was to implement secure message passing using AES-ECB
+and a SHA256 DPK. The message passing and command operation functionality was
+successfully implemented, however AES proved a difficult task to implement on
+the Microbit. Instead, we utilised our working SHA256 algorithm to hash the
+commands and transmit them this way. We recognise that this certainly isnt 
+anywhere as secure as AES encryption, but we wanted to submit this project with
+some security rather than none. Our SHA256 method works in a linear fashion, the
+user inputs the initial session pin, a 128-bit salt is generated and these two
+are combined and then hashed in SHA256. Then the DPK is combined with the
+command pins and hashed once again. This creates four unique command identifiers
+under two layers of hashing, theoretically if our salt generation is working as
+intended the end product command hashes should be drastically different every
+session.  
+The end command hash would consist as follows:  
+SHA256 Hashed Command( (Command Pin) SHA256 DPK( (Session Pin) (128 Bit salt) )  
+
 ## Flashing  
 1. In order to run this project, you will have to install yotta and all of its
 dependencies, details of which can be found [here](http://docs.yottabuild.org/#installing).  
