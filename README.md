@@ -31,6 +31,10 @@ session.
 The end command hash would consist as follows:  
 SHA256 Hashed Command( (Command Pin) SHA256 DPK( (Session Pin) (128 Bit salt) )  
 
+The planned state transition is displayed below, this was achieved for the most
+part besides the AES functionalities:  
+![alt text](https://i.imgur.com/OerYafp.png "State Transition Diagram")  
+
 ## Flashing  
 1. In order to run this project, you will have to install yotta and all of its
 dependencies, details of which can be found [here](http://docs.yottabuild.org/#installing).  
