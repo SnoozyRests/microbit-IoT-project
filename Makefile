@@ -10,3 +10,6 @@ m2:
 
 init:
 	yt target bbc-microbit-classic-gcc
+
+clean:
+	yt clean

@@ -25,6 +25,7 @@ char getChar(char msChar);
 int hashComms();
 void sendCommand(int comm);
 
+//Command method prototyping.
 void accel();
 void compass();
 void fans();
